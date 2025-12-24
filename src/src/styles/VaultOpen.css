@@ -1,0 +1,73 @@
+.open-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vault-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 16px;
+  background: rgba(27, 26, 22, 0.04);
+  margin-bottom: 0.75rem;
+}
+
+.vault-meta div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.vault-meta span {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.vault-meta strong {
+  color: var(--ink);
+  word-break: break-word;
+}
+
+.vault-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.vault-share {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px dashed rgba(20, 20, 20, 0.2);
+  background: rgba(91, 192, 168, 0.08);
+}
+
+.vault-share h4 {
+  margin: 0 0 0.35rem;
+  color: var(--ink);
+}
+
+.vault-share p {
+  margin: 0 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.vault-share-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .vault-share-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
