@@ -1,110 +1,118 @@
-# FHEVM Hardhat Template
+# Deep Vault
 
-A Hardhat-based template for developing Fully Homomorphic Encryption (FHE) enabled Solidity smart contracts using the
-FHEVM protocol by Zama.
+Deep Vault is an encrypted document vault built on Zama's FHEVM. It lets users publish document metadata and ciphertext
+on-chain while keeping the document body and ownership secrets encrypted. The system centers on a locally generated EVM
+address that acts as a per-document secret for encrypting and decrypting content without exposing plaintext to the chain.
 
-## Quick Start
+## Why this exists
 
-For detailed instructions see:
-[FHEVM Hardhat Quick Start Tutorial](https://docs.zama.ai/protocol/solidity-guides/getting-started/quick-start-tutorial)
+Most on-chain document systems either store plaintext or depend on centralized storage and access control. That makes
+auditability and privacy hard to reconcile. Deep Vault solves this by keeping the document body encrypted end-to-end while
+storing immutable references and ciphertext on-chain.
 
-### Prerequisites
+## What problems it solves
 
-- **Node.js**: Version 20 or higher
-- **npm or yarn/pnpm**: Package manager
+- Prevents on-chain leakage of document contents and secret keys.
+- Preserves verifiable history of document updates without revealing plaintext.
+- Enables selective sharing with other users through encrypted authorization.
+- Provides a consistent, auditable flow for creation, editing, and collaboration.
 
-### Installation
+## How it works
 
-1. **Install dependencies**
+1. Create a document:
+   - Generate a random EVM address A locally.
+   - Encrypt A with Zama FHE.
+   - Submit the document name, an empty body, and encrypted A on-chain.
+2. Read and edit:
+   - Fetch the document name and encrypted A from the chain.
+   - Decrypt A locally.
+   - Edit the document body, encrypt it with A, and save the ciphertext on-chain.
+3. Share access:
+   - The owner can allow an address A for other users.
+   - Authorized users can decrypt and submit updates using the same encrypted workflow.
 
-   ```bash
-   npm install
-   ```
+## Key advantages
 
-2. **Set up environment variables**
+- Privacy by design: document contents and secrets stay encrypted at all times.
+- On-chain integrity: every update is recorded and verifiable.
+- Granular sharing: owners can grant access without exposing plaintext.
+- Simple collaboration: authorized users can contribute changes securely.
 
-   ```bash
-   npx hardhat vars set MNEMONIC
+## Tech stack
 
-   # Set your Infura API key for network access
-   npx hardhat vars set INFURA_API_KEY
+- Smart contracts: Solidity with Hardhat
+- FHE protocol: Zama FHEVM
+- Frontend: React + Vite
+- Wallets: RainbowKit
+- Contract reads: viem
+- Contract writes: ethers
+- Package manager: npm
 
-   # Optional: Set Etherscan API key for contract verification
-   npx hardhat vars set ETHERSCAN_API_KEY
-   ```
+## Repository layout
 
-3. **Compile and test**
+- `contracts`: Solidity smart contracts
+- `deploy`: deployment scripts
+- `tasks`: Hardhat tasks
+- `test`: Hardhat tests
+- `docs`: protocol and relayer documentation
+- `src`: frontend application (React + Vite)
 
-   ```bash
-   npm run compile
-   npm run test
-   ```
+## Configuration
 
-4. **Deploy to local network**
+Deployment uses a private key and Infura API key, loaded with dotenv in the Hardhat config or deploy scripts. Do not use
+mnemonic-based deployments.
 
-   ```bash
-   # Start a local FHEVM-ready node
-   npx hardhat node
-   # Deploy to local network
-   npx hardhat deploy --network localhost
-   ```
+Required environment variables:
 
-5. **Deploy to Sepolia Testnet**
+- `PRIVATE_KEY`
+- `INFURA_API_KEY`
+- `ETHERSCAN_API_KEY` (optional, for verification)
 
-   ```bash
-   # Deploy to Sepolia
-   npx hardhat deploy --network sepolia
-   # Verify contract on Etherscan
-   npx hardhat verify --network sepolia <CONTRACT_ADDRESS>
-   ```
+## Usage
 
-6. **Test on Sepolia Testnet**
+Install dependencies:
 
-   ```bash
-   # Once deployed, you can run a simple test on Sepolia.
-   npx hardhat test --network sepolia
-   ```
-
-## 📁 Project Structure
-
-```
-fhevm-hardhat-template/
-├── contracts/           # Smart contract source files
-│   └── FHECounter.sol   # Example FHE counter contract
-├── deploy/              # Deployment scripts
-├── tasks/               # Hardhat custom tasks
-├── test/                # Test files
-├── hardhat.config.ts    # Hardhat configuration
-└── package.json         # Dependencies and scripts
+```bash
+npm install
 ```
 
-## 📜 Available Scripts
+Compile and test:
 
-| Script             | Description              |
-| ------------------ | ------------------------ |
-| `npm run compile`  | Compile all contracts    |
-| `npm run test`     | Run all tests            |
-| `npm run coverage` | Generate coverage report |
-| `npm run lint`     | Run linting checks       |
-| `npm run clean`    | Clean build artifacts    |
+```bash
+npm run compile
+npm run test
+```
 
-## 📚 Documentation
+Deploy to Sepolia:
 
-- [FHEVM Documentation](https://docs.zama.ai/fhevm)
-- [FHEVM Hardhat Setup Guide](https://docs.zama.ai/protocol/solidity-guides/getting-started/setup)
-- [FHEVM Testing Guide](https://docs.zama.ai/protocol/solidity-guides/development-guide/hardhat/write_test)
-- [FHEVM Hardhat Plugin](https://docs.zama.ai/protocol/solidity-guides/development-guide/hardhat)
+```bash
+npx hardhat deploy --network sepolia
+```
 
-## 📄 License
+Verify (optional):
 
-This project is licensed under the BSD-3-Clause-Clear License. See the [LICENSE](LICENSE) file for details.
+```bash
+npx hardhat verify --network sepolia <CONTRACT_ADDRESS>
+```
 
-## 🆘 Support
+## Frontend integration notes
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/zama-ai/fhevm/issues)
-- **Documentation**: [FHEVM Docs](https://docs.zama.ai)
-- **Community**: [Zama Discord](https://discord.gg/zama)
+- Contract ABI must be copied from `deployments/sepolia`.
+- Do not use Tailwind CSS.
+- Do not use local storage or localhost network configurations.
+- Do not use frontend environment variables.
+- Do not import files from the repository root into the frontend.
+- Do not use JSON files in the frontend.
+- Do not modify files under `src/hooks`.
 
----
+## Roadmap
 
-**Built with ❤️ by the Zama team**
+- Add richer document metadata (tags, versions, and editors).
+- Introduce encrypted search over document titles and metadata.
+- Improve collaborative editing UX with conflict resolution hints.
+- Add role-based access controls beyond allow-listing.
+- Expand testing coverage for multi-user flows and edge cases.
+
+## License
+
+BSD-3-Clause-Clear. See `LICENSE`.
